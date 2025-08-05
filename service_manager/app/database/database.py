@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -5,7 +6,6 @@ import os
 import json
 from sqlalchemy import Column, DateTime, func
 from sqlalchemy.exc import IntegrityError
-
 
 
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL","postgresql://servicemgr_user:password@localhost:5433/servicemgr_db")
@@ -40,6 +40,9 @@ def init_db():
     
 
 
+from app.database.models import Booking, Tenant, Employee, Shift
+
+from app.api.routes import employee, shift
 def seed_data():
     session = SessionLocal()
     try:
@@ -52,7 +55,7 @@ def seed_data():
 
         # Create Tenants
         tenants = [
-            Tenant(tenant_name="neru network", tenant_metadata={"industry": "Technology", "size": "Enterprise"}),
+            Tenant(tenant_name="neru network", address="ra celebraty studio", longitude="77.4950427", latitude="13.0632540", tenant_metadata={"industry": "Technology", "size": "Enterprise"}),
         ]
         
         for tenant in tenants:
@@ -133,7 +136,7 @@ def seed_data():
             session.flush()
 
             # Create Employees (Assuming you want to make existing users employees)
-            employees = [
+            SEED_employees = [
                 Employee(
                     name="Alice Johnson",
                     email="alice.johnson@example.com",
@@ -151,8 +154,8 @@ def seed_data():
                     subscribe_via_email=True,
                     subscribe_via_sms=False,
                     address="Acme HQ, Tech Park",
-                    latitude="12.9716",
-                    longitude="77.5946",
+                    longitude="77.4889504",
+                    latitude="13.0690214",
                     landmark="Near Big Mall"
                 ),
                 Employee(
@@ -172,8 +175,8 @@ def seed_data():
                     subscribe_via_email=True,
                     subscribe_via_sms=True,
                     address="Startup Inc, Downtown",
-                    latitude="28.7041",
-                    longitude="77.1025",
+                    longitude="77.5945665",
+                    latitude="13.0674392",
                     landmark="Opposite Metro Station"
                 ),
                 Employee(
@@ -193,13 +196,13 @@ def seed_data():
                     subscribe_via_email=False,
                     subscribe_via_sms=True,
                     address="Med Solutions, Health Street",
-                    latitude="19.0760",
-                    longitude="72.8777",
+                    longitude="77.5945665",
+                    latitude="13.0674111",
                     landmark="Near City Hospital"
                 )
             ]
 
-            session.add_all(employees)
+            session.add_all(SEED_employees)
             session.flush()
 
         
@@ -347,7 +350,7 @@ def seed_data():
             from datetime import time
             from app.database.models import LogType, DayOfWeek, PickupType, GenderType
 
-            shifts = [
+            SEED_shifts = [
                 Shift(
                     tenant_id=tenant.tenant_id,
                     shift_code="MORNING_IN",
@@ -371,7 +374,7 @@ def seed_data():
                     is_active=True
                 )
             ]
-            session.add_all(shifts)
+            session.add_all(SEED_shifts)
             session.flush()
             vendors = [
                 Vendor(
@@ -523,6 +526,94 @@ def seed_data():
             ]
             session.add_all(devices)
             session.flush()
+            sample_bookings = [
+                 Booking(
+                    employee_id=SEED_employees[0].employee_id,
+                    employee_code=SEED_employees[0].employee_code,
+                    tenant_id=tenant.tenant_id,
+                    shift_id=SEED_shifts[0].id,
+                    department_id=SEED_employees[0].department_id,
+                    booking_date=datetime.date(2025, 8, 2),
+                    pickup_location="MG Road",
+                    pickup_location_latitude=SEED_employees[0].latitude,
+                    pickup_location_longitude=SEED_employees[0].longitude,
+                    drop_location="Indiranagar",
+                    drop_location_latitude="13.0632540",
+                    drop_location_longitude="77.4950427",
+                    status="Pending",
+                    created_at=datetime.datetime.now(),
+                    updated_at=datetime.datetime.now(),
+                ),
+                Booking(
+                    employee_id=SEED_employees[0].employee_id,
+                    employee_code=SEED_employees[0].employee_code,
+                    tenant_id=tenant.tenant_id,
+                    shift_id=SEED_shifts[0].id,
+                    department_id=SEED_employees[0].department_id,
+                    booking_date=datetime.date(2025, 8, 2),
+                    pickup_location="Brigade Road",
+                    pickup_location_latitude=SEED_employees[0].latitude,
+                    pickup_location_longitude=SEED_employees[0].longitude,
+                    drop_location="Domlur",
+                    drop_location_latitude="12.9611",
+                    drop_location_longitude="77.6412",
+                    status="Pending",
+                    created_at=datetime.datetime.now(),
+                    updated_at=datetime.datetime.now(),
+                ),
+                Booking(
+                    employee_id=SEED_employees[0].employee_id,
+                    employee_code=SEED_employees[0].employee_code,
+                    tenant_id=tenant.tenant_id,
+                    shift_id=SEED_shifts[0].id,
+                    department_id=SEED_employees[0].department_id,
+                    booking_date=datetime.date(2025, 8, 2),
+                    pickup_location="Church Street",
+                    pickup_location_latitude=SEED_employees[0].latitude,
+                    pickup_location_longitude=SEED_employees[0].longitude,
+                    drop_location="HAL 2nd Stage",
+                    drop_location_latitude="13.0632540",
+                    drop_location_longitude="77.4950427",
+                    status="Pending",
+                    created_at=datetime.datetime.now(),
+                    updated_at=datetime.datetime.now(),
+                ),
+                Booking(
+                    employee_id=SEED_employees[0].employee_id,
+                    employee_code=SEED_employees[0].employee_code,
+                    tenant_id=tenant.tenant_id,
+                    shift_id=SEED_shifts[0].id,
+                    department_id=SEED_employees[0].department_id,
+                    booking_date=datetime.date(2025, 8, 2),
+                    pickup_location="Ulsoor",
+                    pickup_location_latitude=SEED_employees[0].latitude,
+                    pickup_location_longitude=SEED_employees[0].longitude,
+                    drop_location="Ejipura",
+                    drop_location_latitude="13.0632540",
+                    drop_location_longitude="77.4950427",
+                    status="Pending",
+                    created_at=datetime.datetime.now(),
+                    updated_at=datetime.datetime.now(),
+                ),
+                Booking(
+                    employee_id=SEED_employees[1].employee_id,
+                    employee_code=SEED_employees[1].employee_code,
+                    tenant_id=tenant.tenant_id,
+                    shift_id=SEED_shifts[1].id,
+                    department_id=SEED_employees[1].department_id,
+                    booking_date=datetime.date(2025, 8, 2),
+                    pickup_location="Sample Pickup Location",
+                    pickup_location_latitude=SEED_employees[1].latitude,
+                    pickup_location_longitude=SEED_employees[1].longitude,
+                    drop_location="Sample Drop Location",
+                    drop_location_latitude="13.0632540",
+                    drop_location_longitude="77.4950427",
+                    status="Confirmed",
+                    created_at=datetime.datetime.now(),
+                    updated_at=datetime.datetime.now(),
+                )
+            ]
+            session.add_all(sample_bookings)
             session.commit()
             print("Sample data seeded successfully.")
         except IntegrityError as e:
@@ -532,5 +623,6 @@ def seed_data():
             print(f"Unexpected error seeding data: {e}")
             session.rollback()
             raise e
+    
     finally:
         session.close()
