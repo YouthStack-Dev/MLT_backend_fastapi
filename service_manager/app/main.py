@@ -32,7 +32,8 @@ redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
 async def lifespan(app: FastAPI):
     # Create models
     init_db()
-    
+    await redis_client.ping()
+    print("✅ Redis connection OK")
     seed_data()
     yield
 
@@ -44,10 +45,15 @@ async def startup():
     await redis_client.ping()
     print("✅ Redis connection OK")
 
-@app.get("/test")
-async def test():
-    await redis_client.set("foo", "bar")
-    return {"foo": await redis_client.get("foo")}
+@app.get("/set")
+async def set_value(key: str, value: str):
+    await redis_client.set(key, value)
+    return {"status": "ok", "key": key, "value": value}
+
+@app.get("/get")
+async def get_value(key: str):
+    value = await redis_client.get(key)
+    return {"key": key, "value": value}
 
 # app = FastAPI(title="Service Manager")
 app.add_middleware(
