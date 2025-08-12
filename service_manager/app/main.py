@@ -24,7 +24,10 @@ from app.api.routes.booking import router as booking_router
 from contextlib import asynccontextmanager
 from app.database.database import init_db, seed_data
 from fastapi.middleware.cors import CORSMiddleware
- 
+import redis.asyncio as redis
+
+redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create models
@@ -35,6 +38,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Service Manager", lifespan=lifespan)
+
+@app.on_event("startup")
+async def startup():
+    await redis_client.ping()
+    print("✅ Redis connection OK")
+
+@app.get("/test")
+async def test():
+    await redis_client.set("foo", "bar")
+    return {"foo": await redis_client.get("foo")}
+
 # app = FastAPI(title="Service Manager")
 app.add_middleware(
     CORSMiddleware,

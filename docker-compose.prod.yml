@@ -14,6 +14,13 @@ services:
       - servicemgr_data:/var/lib/postgresql/data
     restart: always
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always
+
   service_manager:
     image: dheerajkumarp/fleet_service_manager:latest
     container_name: service_manager
@@ -29,10 +36,13 @@ services:
     # ✅ Internal container-to-container DB connection
     environment:
       - DATABASE_URL=postgresql://servicemgr_user:password@db_servicemgr:5432/servicemgr_db
-
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./firebase_key.json:/app/secrets/firebase_key.json
     depends_on:
       - db_servicemgr
-
+      - redis
     ports:
       - "8100:8100"
     restart: always
